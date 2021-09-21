@@ -47,6 +47,7 @@ import (
 	"github.com/m3db/m3/src/query/api/v1/options"
 	m3dbcluster "github.com/m3db/m3/src/query/cluster/m3db"
 	"github.com/m3db/m3/src/query/executor"
+	"github.com/m3db/m3/src/query/generated/proto/prompb"
 	graphite "github.com/m3db/m3/src/query/graphite/storage"
 	"github.com/m3db/m3/src/query/models"
 	"github.com/m3db/m3/src/query/parser/promql"
@@ -504,6 +505,7 @@ func Run(runOpts RunOptions) RunResult {
 			}
 		}()
 
+		logger.Info("aaaaaaaaaaaa")
 		logger.Info("configuring downsampler to use with aggregated namespaces",
 			zap.Int("numAggregatedClusterNamespaces", opts.Namespaces().NumAggregatedClusterNamespaces()))
 		err = clusterNamespacesWatcher.Update(opts.Namespaces())
@@ -810,6 +812,15 @@ func newDownsamplerAsync(
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to create cluster management etcd client")
 		}
+		kvv, err := clusterClient.KV()
+		if err != nil {
+			return nil, nil, errors.Wrap(err, "unable to get kv")
+		}
+		k, err := kvv.Set("test_key", &prompb.WriteRequest{})
+		if err != nil {
+			return nil, nil, errors.Wrap(err, "unable to get kv")
+		}
+		println("bbbbbbb", k)
 	}
 
 	newDownsamplerFn := func() (downsample.Downsampler, error) {
